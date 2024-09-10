@@ -13,6 +13,9 @@ on:
 concurrency:
     group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
     cancel-in-progress: true
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
 jobs:
     build:
         name: "⚡️"
@@ -25,11 +28,11 @@ jobs:
             - uses: docker/metadata-action@v5
               id: meta
               with:
-                  images: ghcr.io/${{ github.repository }}
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
                   tags: ${{ github.event.inputs.image_tag }}
             - uses: docker/login-action@v3
               with:
-                  registry: ghcr.io
+                  registry: ${{ env.REGISTRY }}
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
             - uses: docker/build-push-action@v6
