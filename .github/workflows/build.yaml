@@ -1,0 +1,30 @@
+on:
+    workflow_dispatch:
+        inputs:
+            image_tag:
+                type: choice
+                description: ${{ github.repository }}:<image_tag>
+                options:
+                    - develop
+                    - release
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+    cancel-in-progress: true
+permissions:
+    contents: read
+    packages: write
+jobs:
+    build:
+        runs-on: self-hosted
+        steps:
+            - uses: actions/checkout@v4
+            - uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+            - uses: docker/build-push-action@v6
+              with:
+                  platforms: linux/arm64
+                  tags: ${{ github.repository }}:${{ github.event.inputs.image_tag }}
+                  push: true
