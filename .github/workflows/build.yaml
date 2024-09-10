@@ -1,4 +1,4 @@
-name: "build and push docker image"
+name: "📦"
 on:
     workflow_dispatch:
         inputs:
@@ -6,31 +6,36 @@ on:
                 type: choice
                 description: "docker image tag"
                 required: true
+                default: develop
                 options:
                     - develop
                     - release
 concurrency:
     group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
     cancel-in-progress: true
-permissions:
-    contents: read
-    packages: write
 jobs:
     build:
+        name: "⚡️"
         runs-on: self-hosted
+        permissions:
+            contents: read
+            packages: write
         steps:
             - uses: actions/checkout@v4
+            - uses: docker/metadata-action@v5
+              id: meta
+              with:
+                  images: ghcr.io/${{ github.repository }}
+                  tags: ${{ github.event.inputs.image_tag }}
             - uses: docker/login-action@v3
               with:
                   registry: ghcr.io
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
-            - run: |
-                  echo "image_name=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-              env:
-                  GITHUB_REPOSITORY: ${{ github.repository }}
             - uses: docker/build-push-action@v6
+              env:
+                  DOCKER_BUILD_RECORD_UPLOAD: false
               with:
                   platforms: linux/arm64
-                  tags: ${{ env.image_name }}:${{ github.event.inputs.image_tag }}
+                  tags: ${{ steps.meta.outputs.tags }}
                   push: true

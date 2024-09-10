@@ -47,5 +47,4 @@ WORKDIR /tileserver
 COPY --from=tileserver-build /tileserver/tileserver .
 COPY --from=tilemaker-generate /tilemaker/turkey.mbtiles ./tilesets/turkey.mbtiles
 
-ENTRYPOINT [ "/tileserver/tileserver", "--dir=/tileserver/tilesets" ]
-
+ENTRYPOINT [ "/tileserver/tileserver", "--dir=/tileserver/tilesets", "--disable-preview", "--disable-tilejson" ]
