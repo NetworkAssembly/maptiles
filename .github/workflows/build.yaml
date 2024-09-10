@@ -3,7 +3,8 @@ on:
         inputs:
             image_tag:
                 type: choice
-                description: ${{ github.repository }}:<image_tag>
+                description: "docker image tag"
+                required: true
                 options:
                     - develop
                     - release
