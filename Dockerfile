@@ -27,7 +27,8 @@ COPY --from=tilemaker-compile /tilemaker/build/tilemaker .
 COPY --from=tilemaker-compile /tilemaker/resources ./resources
 COPY --from=tilemaker-compile /tilemaker/coastline ./coastline
 
-RUN jq ".settings.include_ids=true" resources/config-openmaptiles.json | sponge resources/config-openmaptiles.json
+# RUN jq ".settings.include_ids=true" resources/config-openmaptiles.json | sponge resources/config-openmaptiles.json
+RUN jq '.settings.include_ids=true | .settings.maxzoom = 16 | .settings.basezoom = 16 | .settings.combine_below = 16 | .layers.building.minzoom = 12 | (.layers[] | .maxzoom) |= if . == 14 then 16 else . end' resources/config-openmaptiles.json | sponge resources/config-openmaptiles.json
 
 RUN curl -O https://download.geofabrik.de/europe/turkey-latest.osm.pbf
 RUN ./tilemaker --fast --input=turkey-latest.osm.pbf --output=turkey.mbtiles --config=resources/config-openmaptiles.json --process=resources/process-openmaptiles.lua
