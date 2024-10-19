@@ -14,6 +14,14 @@ WORKDIR /tilemaker/coastline
 RUN curl -O https://osmdata.openstreetmap.de/download/water-polygons-split-4326.zip
 RUN unzip -oj water-polygons-split-4326.zip
 
+WORKDIR /tilemaker/landcover
+RUN curl -O https://naciscdn.org/naturalearth/10m/physical/ne_10m_antarctic_ice_shelves_polys.zip
+RUN curl -O https://naciscdn.org/naturalearth/10m/physical/ne_10m_glaciated_areas.zip
+RUN curl -O https://naciscdn.org/naturalearth/10m/cultural/ne_10m_urban_areas.zip
+RUN unzip -oj ne_10m_antarctic_ice_shelves_polys.zip
+RUN unzip -oj ne_10m_glaciated_areas.zip
+RUN unzip -oj ne_10m_urban_areas.zip
+
 FROM debian:bookworm-slim AS tilemaker-generate
 
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
@@ -26,6 +34,7 @@ WORKDIR /tilemaker
 COPY --from=tilemaker-compile /tilemaker/build/tilemaker .
 COPY --from=tilemaker-compile /tilemaker/resources ./resources
 COPY --from=tilemaker-compile /tilemaker/coastline ./coastline
+COPY --from=tilemaker-compile /tilemaker/landcover ./landcover
 
 # RUN jq ".settings.include_ids=true" resources/config-openmaptiles.json | sponge resources/config-openmaptiles.json
 RUN jq '.settings.include_ids=true | .settings.maxzoom = 16 | .settings.basezoom = 16 | .settings.combine_below = 16 | .layers.building.minzoom = 12 | (.layers[] | .maxzoom) |= if . == 14 then 16 else . end' resources/config-openmaptiles.json | sponge resources/config-openmaptiles.json
