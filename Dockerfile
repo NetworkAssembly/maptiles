@@ -4,7 +4,7 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
     git curl unzip cmake ca-certificates \
     build-essential libboost-dev libboost-filesystem-dev libboost-iostreams-dev libboost-program-options-dev libboost-system-dev liblua5.1-0-dev libshp-dev libsqlite3-dev rapidjson-dev zlib1g-dev
 RUN update-ca-certificates
-RUN git clone https://github.com/systemed/tilemaker.git /tilemaker
+RUN git clone https://github.com/systemed/tilemaker.git --branch=v3.0.0 --single-branch --depth 1 /tilemaker
 
 WORKDIR /tilemaker/build
 RUN cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -44,7 +44,7 @@ RUN ./tilemaker --fast --no-compress-nodes --no-compress-ways --materialize-geom
 FROM golang:alpine AS tileserver-build
 
 RUN apk update && apk add git build-base
-RUN git clone https://github.com/consbio/mbtileserver.git /tileserver
+RUN git clone git@github.com:consbio/mbtileserver.git --branch=v0.11.0 --single-branch --depth 1 /tileserver
 
 WORKDIR /tileserver
 RUN GOOS=linux go build -o tileserver
