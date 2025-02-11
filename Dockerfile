@@ -39,7 +39,7 @@ COPY --from=tilemaker-compile /tilemaker/landcover ./landcover
 RUN jq '.settings.include_ids=true | .settings.maxzoom = 16 | .settings.basezoom = 16 | .settings.combine_below = 16 | .layers.building.minzoom = 12 | (.layers[] | .maxzoom) |= if . == 14 then 16 else . end' resources/config-openmaptiles.json | sponge resources/config-openmaptiles.json
 
 RUN curl -O https://download.geofabrik.de/europe/turkey-latest.osm.pbf
-RUN ./tilemaker --fast --no-compress-nodes --no-compress-ways --materialize-geometries --input=turkey-latest.osm.pbf --output=turkey.mbtiles --config=resources/config-openmaptiles.json --process=resources/process-openmaptiles.lua
+RUN ./tilemaker --no-compress-nodes --no-compress-ways --materialize-geometries --input=turkey-latest.osm.pbf --output=turkey.mbtiles --config=resources/config-openmaptiles.json --process=resources/process-openmaptiles.lua
 
 FROM golang:alpine AS tileserver-build
 
