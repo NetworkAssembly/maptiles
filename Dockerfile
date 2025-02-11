@@ -44,7 +44,7 @@ RUN ./tilemaker --fast --no-compress-nodes --no-compress-ways --materialize-geom
 FROM golang:alpine AS tileserver-build
 
 RUN apk update && apk add git build-base
-RUN git clone git@github.com:consbio/mbtileserver.git --branch=v0.11.0 --single-branch --depth 1 /tileserver
+RUN git clone https://github.com/consbio/mbtileserver.git --branch=v0.11.0 --single-branch --depth 1 /tileserver
 
 WORKDIR /tileserver
 RUN GOOS=linux go build -o tileserver
