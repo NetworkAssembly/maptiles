@@ -41,6 +41,5 @@ jobs:
               with:
                   platforms: linux/arm64
                   tags: ${{ steps.meta.outputs.tags }}
-                  no-cache: true
                   pull: true
                   push: true
