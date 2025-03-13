@@ -5,12 +5,12 @@ on:
         inputs:
             image_tag:
                 type: choice
-                description: "docker image tag"
+                description: docker image tag name
                 required: true
-                default: development
+                default: develop
                 options:
-                    - development
-                    - production
+                    - develop
+                    - release
 concurrency:
     group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}-${{ inputs.image_tag }}
     cancel-in-progress: true
